@@ -1,7 +1,7 @@
 # Relationship
 
 ## Descrição
-Este é um projeto de demonstração utilizando Spring Boot para gerenciar informações de clientes.
+Este é um projeto de demonstração utilizando Spring Boot para gerenciar informações e pedidos de clientes que utiliza o serviço s3 da aws.
 
 ## Tecnologias Utilizadas
 - **Java 17**: Linguagem de programação utilizada.
