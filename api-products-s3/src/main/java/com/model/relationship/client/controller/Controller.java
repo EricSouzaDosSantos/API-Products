@@ -3,7 +3,6 @@ package com.model.relationship.client.controller;
 
 import com.model.relationship.client.model.Client;
 import com.model.relationship.client.repository.ClientRepository;
-import com.model.relationship.client.service.WhatsapService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
