@@ -2,7 +2,12 @@ package com.model.relationship.client.controller;
 
 
 import com.model.relationship.client.model.Client;
+import com.model.relationship.client.model.ClientDTO;
 import com.model.relationship.client.repository.ClientRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/client")
-public class Controller {
-
-
+public class ClientController {
 
     @Autowired
      private ClientRepository clientRepository;
@@ -23,11 +26,19 @@ public class Controller {
         return ResponseEntity.ok(allClients);
     }
 
+    @Operation(summary = "Register a new client", description = "Register a new client in data base.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Client registered", content = @Content(mediaType = "application/json"))})
+
     @PostMapping
-    public ResponseEntity registerClient(@RequestBody @Valid Client client){
-        clientRepository.save(client);
+    public ResponseEntity registerClient(@RequestBody @Valid ClientDTO client){
+        Client newClient = new Client();
+        newClient.setName(client.name());
+        newClient.setEmail(client.email());
+        newClient.setAddress(client.address());
+
+        clientRepository.save(newClient);
         System.out.print("user inserted");
-        return ResponseEntity.ok("registered users");
+        return ResponseEntity.status(200).body("registered users");
     }
 
     @GetMapping(path = {"/{id}"})
