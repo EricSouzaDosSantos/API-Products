@@ -2,6 +2,7 @@ package com.model.relationship.buy.controller;
 
 import com.model.relationship.buy.model.BuyProduct;
 import com.model.relationship.buy.repository.BuyRepository;
+import com.model.relationship.client.model.Client;
 import com.model.relationship.client.repository.ClientRepository;
 import com.model.relationship.product.Repository.ProductRepository;
 import com.model.relationship.product.model.Product;
@@ -26,23 +27,29 @@ public class BuyController {
     private BuyRepository buyRepository;
 
     @PostMapping
-    public BuyProduct BuyProducts(@RequestBody @Valid BuyProduct buy) {
+    public BuyProduct buyProducts(@RequestBody @Valid BuyProduct buy) {
         Optional<Product> productOpt = productRepository.findById(buy.getProduct().getId());
+        Optional<Client> clientOpt = clientRepository.findById(buy.getClient().getId());
 
-        if (productOpt.isPresent()) {
-            Product product = productOpt.get();
-            int newQuantity = product.getProductQuantity() - buy.getQuantityPurchased();
-
-            if (newQuantity >= 0) {
-                product.setProductQuantity(Math.abs(newQuantity));
-                productRepository.save(product);
-                return buyRepository.save(buy);
-            } else {
-                throw new IllegalArgumentException("Quantidade insuficiente no estoque");
-            }
-        } else {
+        if (productOpt.isEmpty()) {
             throw new IllegalArgumentException("Produto não encontrado");
         }
+
+        if (clientOpt.isEmpty()) {
+            throw new IllegalArgumentException("Cliente não encontrado");
+        }
+
+        Product product = productOpt.get();
+        int newQuantity = product.getProductQuantity() - buy.getQuantityPurchased();
+
+        if (newQuantity < 0) {
+            throw new IllegalArgumentException("Quantidade insuficiente no estoque");
+        }
+
+        product.setProductQuantity(newQuantity);
+        productRepository.save(product);
+
+        return buyRepository.save(buy);
     }
 
     @GetMapping
