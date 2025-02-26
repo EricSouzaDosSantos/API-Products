@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -48,6 +49,10 @@ public class ProductService {
             productRepository.save(product);
 
             return product;
+    }
+
+    public Optional<Product> getProductById(long id){
+        return productRepository.findById(id);
     }
 
     public Product updateProduct(ProductRequestDTO data, String imgName, long id){
