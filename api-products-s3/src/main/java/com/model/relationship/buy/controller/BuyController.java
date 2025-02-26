@@ -6,6 +6,9 @@ import com.model.relationship.client.model.Client;
 import com.model.relationship.client.repository.ClientRepository;
 import com.model.relationship.product.Repository.ProductRepository;
 import com.model.relationship.product.model.Product;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +29,13 @@ public class BuyController {
     @Autowired
     private BuyRepository buyRepository;
 
+
+    @Operation(summary = "Buy products", description = "methos for buy products")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "created Product"),
+            @ApiResponse(responseCode = "404", description = "Error creating product")
+    }
+    )
     @PostMapping
     public BuyProduct buyProducts(@RequestBody @Valid BuyProduct buy) {
         Optional<Product> productOpt = productRepository.findById(buy.getProduct().getId());
@@ -52,8 +62,13 @@ public class BuyController {
         return buyRepository.save(buy);
     }
 
+    @Operation(summary = "Get all buy's", description = "Get all buy's")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "get all buys with success"),
+            @ApiResponse(responseCode = "404", description = "error when trying to pick up the product")
+    })
     @GetMapping
-    public List<BuyProduct> getAllCompras() {
+    public List<BuyProduct> getAllBuys() {
         return buyRepository.findAll();
     }
 
