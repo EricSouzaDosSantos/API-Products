@@ -19,8 +19,8 @@ import java.util.List;
 @RequestMapping("/client")
 public class ClientController {
 
-    @Autowired
-    private ClientRepository clientRepository;
+//    @Autowired
+//    private ClientRepository clientRepository;
 
     @Autowired
     private ClientService clientService;
@@ -29,12 +29,12 @@ public class ClientController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of clients retrieved successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Client.class)))
+                            schema = @Schema(implementation = Client.class))),
+            @ApiResponse(responseCode = "404", description = "error trying to create product")
     })
     @GetMapping
     public ResponseEntity<List<Client>> getAllClients() {
-        List<Client> allClients = clientRepository.findAll();
-        return ResponseEntity.ok(allClients);
+        return clientService.getAllClients();
     }
 
     @Operation(summary = "Register a new client", description = "Registers a new client in the database.")
@@ -53,6 +53,30 @@ public class ClientController {
         }
     }
 
+    @Operation(summary = "update Product", description = "update Product by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Product updated"),
+            @ApiResponse(responseCode = "400", description = "Error updating product")
+    })
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<String> updateClient(@PathVariable long id, @RequestBody @Valid ClientDTO client) {
+        try {
+            clientService.updateClient(id, client);
+            return ResponseEntity.status(201).body("User updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating user: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<String> deleteClient(@PathVariable long id) {
+        try {
+            clientService.deleteClient(id);
+            return ResponseEntity.status(201).body("User deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error deleting user: " + e.getMessage());
+        }
+    }
 
     @Operation(summary = "Get client by ID", description = "Retrieve details of a specific client using their ID.")
     @ApiResponses(value = {
@@ -63,8 +87,6 @@ public class ClientController {
     })
     @GetMapping(path = "/{id}")
     public ResponseEntity<Client> getClientById(@PathVariable long id) {
-        return clientRepository.findById(id)
-                .map(record -> ResponseEntity.ok().body(record))
-                .orElse(ResponseEntity.notFound().build());
+        return clientService.getClientById(id);
     }
 }
